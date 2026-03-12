@@ -56,9 +56,6 @@ RUN if getent group "${GID}" >/dev/null; then \
 # Setup locale and timezone
 ENV DEBIAN_FRONTEND="noninteractive"
 ENV TZ="Asia/Taipei"
-ENV LC_ALL="en_US.UTF-8"
-ENV LANG="en_US.UTF-8"
-ENV LANGUAGE="en_US:en"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -66,9 +63,13 @@ RUN apt-get update && \
         locales && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    locale-gen "${LANG}" && \
-    update-locale LANG="${LANG}" && \
+    locale-gen "en_US.UTF-8" && \
+    update-locale LANG="en_US.UTF-8" && \
     ln -snf /usr/share/zoneinfo/"${TZ}" /etc/localtime && echo "${TZ}" > /etc/timezone
+
+ENV LC_ALL="en_US.UTF-8"
+ENV LANG="en_US.UTF-8"
+ENV LANGUAGE="en_US:en"
 
 # GPU-only: Install Node.js 20 (CUDA base image has no node)
 RUN if [ "${GPU_VARIANT}" = "true" ]; then \
