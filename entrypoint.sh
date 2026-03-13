@@ -8,15 +8,18 @@ echo "Waiting for Docker daemon..."
 timeout 30 sh -c 'until docker info > /dev/null 2>&1; do sleep 1; done'
 echo "Docker daemon is ready."
 
-# ── OAuth: Copy credentials on first run (read-only mount -> bind mount) ──
-for dir in .claude .gemini .codex; do
-    host_dir="/tmp/${dir}-host"
-    target_dir="${HOME}/${dir}"
-    if [[ -d "${host_dir}" ]] && [[ -z "$(ls -A "${target_dir}" 2>/dev/null)" ]]; then
-        cp -a "${host_dir}/." "${target_dir}/"
-        echo "Initialized ${dir} credentials from host."
+# ── OAuth: Copy credentials only on first run (single file, not entire directory) ──
+copy_credential() {
+    local src="$1" dest="$2" label="$3"
+    if [[ -f "${src}" ]] && [[ ! -f "${dest}" ]]; then
+        mkdir -p "$(dirname "${dest}")"
+        cp "${src}" "${dest}"
+        echo "Initialized ${label} credentials from host."
     fi
-done
+}
+
+copy_credential "/tmp/.claude-credentials.json" "${HOME}/.claude/.credentials.json" "Claude"
+copy_credential "/tmp/.gemini-credentials.json" "${HOME}/.gemini/oauth_creds.json" "Gemini"
 
 # ── API Key: Decrypt .env.gpg if present ──
 ENV_ENC="${HOME}/work/.env.gpg"

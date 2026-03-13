@@ -24,9 +24,10 @@ services:
       - seccomp:unconfined
     volumes:
       - ${WS_PATH}:/home/${USER_NAME}/work
-      - ${CLAUDE_HOST_DIR:-~/.claude}:/tmp/.claude-host:ro
-      - ${GEMINI_HOST_DIR:-~/.gemini}:/tmp/.gemini-host:ro
-      - ${CODEX_HOST_DIR:-~/.codex}:/tmp/.codex-host:ro
+      # Credentials only (read-only, no history/memory/settings)
+      - ${CLAUDE_HOST_DIR:-~/.claude}/.credentials.json:/tmp/.claude-credentials.json:ro
+      - ${GEMINI_HOST_DIR:-~/.gemini}/oauth_creds.json:/tmp/.gemini-credentials.json:ro
+      # Session data (persisted on host)
       - ${DATA_DIR:-./data}/.claude:/home/${USER_NAME}/.claude
       - ${DATA_DIR:-./data}/.gemini:/home/${USER_NAME}/.gemini
       - ${DATA_DIR:-./data}/.codex:/home/${USER_NAME}/.codex
