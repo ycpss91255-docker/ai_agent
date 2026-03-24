@@ -1,4 +1,4 @@
-**繁體中文** | [English](README.md)
+**[English](README.md)** | **繁體中文** | **[简体中文](README.zh-CN.md)** | **[日本語](README.ja.md)**
 
 # AI Agent 開發環境
 
