@@ -143,7 +143,7 @@ FROM base AS devel
 
 ARG USER
 ARG GROUP
-ARG ENTRYPOINT_FILE="entrypoint.sh"
+ARG ENTRYPOINT_FILE="script/entrypoint.sh"
 
 # Claude Code, Gemini CLI & OpenAI Codex CLI
 RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli @openai/codex
