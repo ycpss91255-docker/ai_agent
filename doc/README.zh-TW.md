@@ -15,6 +15,7 @@ Docker-in-Docker (DinD) AI 代理開發容器，預裝 Claude Code、Gemini CLI 
 - [認證](#認證)
   - [OAuth（互動式登入）](#oauth互動式登入)
   - [API 金鑰（加密）](#api-金鑰加密)
+- [作為 Subtree 使用](#作為-subtree-使用)
 - [設定](#設定)
 - [冒煙測試](#冒煙測試)
 - [架構](#架構)
@@ -232,6 +233,66 @@ rm .env.keys
 容器啟動時，若在工作區偵測到 `.env.gpg`，系統會提示輸入通關密語。解密後的金鑰僅以環境變數形式保存於記憶體中。
 
 > **注意：**`.env` 與 `.env.gpg` 已列於 `.gitignore`。
+
+## 作為 Subtree 使用
+
+此 repo 可透過 `git subtree` 嵌入至其他專案，讓專案自帶 Docker 開發環境。
+
+### 加入你的專案
+
+```bash
+git subtree add --prefix=docker/ai_agent \
+    https://github.com/ycpss91255-docker/ai_agent.git main --squash
+```
+
+加入後的目錄結構範例：
+
+```text
+my_project/
+├── src/                         # 專案原始碼
+├── docker/ai_agent/             # Subtree
+│   ├── build.sh
+│   ├── run.sh
+│   ├── compose.yaml
+│   ├── Dockerfile
+│   └── docker_setup_helper/
+└── ...
+```
+
+### 建置與執行
+
+```bash
+cd docker/ai_agent
+./build.sh && ./run.sh
+```
+
+`build.sh` 內部使用 `--base-path`，因此無論從何處執行，路徑偵測都能正確運作。
+
+### 工作區偵測行為
+
+<details>
+<summary>展開查看作為 subtree 使用時的偵測行為</summary>
+
+當 subtree 位於 `my_project/docker/ai_agent/` 時：
+
+- **IMAGE_NAME**：目錄名稱為 `ai_agent`（非 `docker_*`），因此偵測會退回至 `.env.example`，其中設定了 `IMAGE_NAME=ai_agent` — 可正常運作。
+- **WS_PATH**：策略 1（同層掃描）與策略 2（向上遍歷）可能無法匹配，因此策略 3（退回）會解析至上層目錄（`my_project/docker/`）。
+
+**建議**：首次建置後，請編輯 `.env` 中的 `WS_PATH` 指向實際工作區。此值在後續建置中會被保留。
+
+</details>
+
+### 同步上游更新
+
+```bash
+git subtree pull --prefix=docker/ai_agent \
+    https://github.com/ycpss91255-docker/ai_agent.git main --squash
+```
+
+> **注意事項**：
+> - 本地修改會由 git 正常追蹤。
+> - 若上游修改了與你本地相同的檔案，`subtree pull` 可能會產生合併衝突。
+> - **不要**修改 subtree 內的 `docker_setup_helper/` — 它由 env repo 自身的 subtree 管理。
 
 ## 設定
 
