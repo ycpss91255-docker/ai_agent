@@ -17,7 +17,7 @@ Docker-in-Docker (DinD) AI エージェント開発コンテナ。Claude Code、
   - [API キー（暗号化）](#api-キー暗号化)
 - [Subtree としての利用](#subtree-としての利用)
 - [設定](#設定)
-- [スモークテスト](#スモークテスト)
+- [smoke test](#smoke test)
 - [アーキテクチャ](#アーキテクチャ)
   - [Dockerfile ビルドステージ](#dockerfile-ビルドステージ)
   - [Compose サービス](#compose-サービス)
@@ -42,31 +42,31 @@ Docker-in-Docker (DinD) AI エージェント開発コンテナ。Claude Code、
 ```mermaid
 graph TB
     subgraph Host
-        H_OAuth["~/.claude & ~/.gemini & ~/.codex<br/>(OAuth credentials)"]
-        H_WS["Workspace<br/>(WS_PATH)"]
-        H_Data["Data Directory<br/>(agent_* or ./data/)"]
+        H_OAuth["~/.claude & ~/.gemini & ~/.codex<br/>(OAuth 認証情報)"]
+        H_WS["ワークスペース<br/>(WS_PATH)"]
+        H_Data["データディレクトリ<br/>(agent_* or ./data/)"]
     end
 
     subgraph "Container (DinD)"
         EP["entrypoint.sh"]
-        DinD["dockerd<br/>(isolated)"]
+        DinD["dockerd<br/>(隔離)"]
         Claude["Claude Code"]
         Gemini["Gemini CLI"]
         Codex["Codex CLI"]
         Tools["git, python3, jq,<br/>ripgrep, make, cmake..."]
 
-        EP -->|"1. start"| DinD
-        EP -->|"2. copy credentials<br/>(first run)"| Claude
+        EP -->|"1. 起動"| DinD
+        EP -->|"2. 認証情報をコピー<br/>（初回実行時）"| Claude
         EP -->|"2."| Gemini
         EP -->|"2."| Codex
-        EP -->|"3. decrypt API keys<br/>(if .env.gpg)"| Tools
+        EP -->|"3. API キーを復号<br/>（.env.gpg がある場合）"| Tools
     end
 
-    H_OAuth -->|"read-only mount"| EP
-    H_WS -->|"bind mount<br/>~/work"| Tools
-    H_Data -->|"bind mount<br/>~/.claude, ~/.gemini,<br/>~/.codex"| Claude
-    H_Data -->|"bind mount"| Gemini
-    H_Data -->|"bind mount"| Codex
+    H_OAuth -->|"読み取り専用マウント"| EP
+    H_WS -->|"バインドマウント<br/>~/work"| Tools
+    H_Data -->|"バインドマウント<br/>~/.claude, ~/.gemini,<br/>~/.codex"| Claude
+    H_Data -->|"バインドマウント"| Gemini
+    H_Data -->|"バインドマウント"| Codex
 
     style DinD fill:#f0f0f0,stroke:#666
     style Claude fill:#d4a574,stroke:#333
@@ -76,11 +76,11 @@ graph TB
 
 ```mermaid
 graph LR
-    subgraph "Dockerfile Stages"
-        sys["sys<br/>user, locale, tz"]
-        base["base<br/>dev tools, docker"]
+    subgraph "Dockerfile ステージ"
+        sys["sys<br/>ユーザー, ロケール, タイムゾーン"]
+        base["base<br/>開発ツール, Docker"]
         devel["devel<br/>claude, gemini, codex"]
-        test["test<br/>bats smoke test"]
+        test["test<br/>Bats smoke test"]
     end
 
     sys --> base --> devel --> test
@@ -88,7 +88,7 @@ graph LR
     subgraph "Compose Services"
         S_CPU["devel<br/>(CPU, default)"]
         S_GPU["devel-gpu<br/>(NVIDIA GPU)"]
-        S_Test["test<br/>(ephemeral)"]
+        S_Test["test<br/>（一時的）"]
     end
 
     devel -.-> S_CPU
@@ -142,7 +142,7 @@ flowchart LR
 
 ## 会話の永続化
 
-会話履歴と Session データは bind mount により永続化され、コンテナ再起動後も保持されます。
+会話履歴と Session データは バインドマウント により永続化され、コンテナ再起動後も保持されます。
 
 `run.sh` はプロジェクトディレクトリから上方向に `agent_*` ディレクトリを自動スキャンします。見つかった場合はそのディレクトリにデータを保存し、見つからない場合は `./data/` にフォールバックします。
 
@@ -306,7 +306,7 @@ git subtree pull --prefix=docker/ai_agent \
 | `WS_PATH` | コンテナ内の `~/work` にマウントされるホストパス |
 | `IMAGE_NAME` | Docker イメージ名（デフォルト：`ai_agent`） |
 
-## スモークテスト
+## smoke test
 
 test ターゲットをビルドして環境を検証：
 
@@ -388,7 +388,7 @@ test ターゲットをビルドして環境を検証：
 ├── encrypt_env.sh         # API キー暗号化ヘルパースクリプト
 ├── post_setup.sh          # GPU_ENABLED に基づき BASE_IMAGE を導出
 ├── .env.example           # .env テンプレート
-├── smoke_test/            # Bats スモークテスト
+├── smoke_test/            # Bats smoke test
 │   ├── agent_env.bats
 │   └── test_helper.bash
 ├── docker_template/   # .env 自動生成ツール（git subtree）
@@ -403,7 +403,7 @@ test ターゲットをビルドして環境を検証：
 | `sys` | ユーザー/グループ作成、ロケール、タイムゾーン、Node.js（GPU のみ） |
 | `base` | 開発ツール、Python、ビルドツール、Docker、jq、ripgrep |
 | `devel` | Claude Code、Gemini CLI、Codex CLI、エントリポイント、非 root ユーザーに切替 |
-| `test` | Bats スモークテスト（一時的、検証後に破棄） |
+| `test` | Bats smoke test（一時的、検証後に破棄） |
 
 ### Compose サービス
 
@@ -411,7 +411,7 @@ test ターゲットをビルドして環境を検証：
 |----------|------|
 | `devel` | CPU バリアント（デフォルト） |
 | `devel-gpu` | GPU バリアント、NVIDIA デバイス予約付き |
-| `test` | スモークテスト（profile で制御） |
+| `test` | smoke test（profile で制御） |
 
 ### エントリポイントフロー
 
