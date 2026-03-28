@@ -17,7 +17,7 @@ Docker-in-Docker (DinD) AI 代理开发容器，预装 Claude Code、Gemini CLI 
   - [API 密钥（加密）](#api-密钥加密)
 - [作为 Subtree 使用](#作为-subtree-使用)
 - [设置](#设置)
-- [冒烟测试](#冒烟测试)
+- [smoke test](#smoke test)
 - [架构](#架构)
   - [Dockerfile 构建阶段](#dockerfile-构建阶段)
   - [Compose 服务](#compose-服务)
@@ -42,31 +42,31 @@ Docker-in-Docker (DinD) AI 代理开发容器，预装 Claude Code、Gemini CLI 
 ```mermaid
 graph TB
     subgraph Host
-        H_OAuth["~/.claude & ~/.gemini & ~/.codex<br/>(OAuth credentials)"]
-        H_WS["Workspace<br/>(WS_PATH)"]
-        H_Data["Data Directory<br/>(agent_* or ./data/)"]
+        H_OAuth["~/.claude & ~/.gemini & ~/.codex<br/>(OAuth 凭证)"]
+        H_WS["工作区<br/>(WS_PATH)"]
+        H_Data["数据目录<br/>(agent_* or ./data/)"]
     end
 
     subgraph "Container (DinD)"
         EP["entrypoint.sh"]
-        DinD["dockerd<br/>(isolated)"]
+        DinD["dockerd<br/>(隔离)"]
         Claude["Claude Code"]
         Gemini["Gemini CLI"]
         Codex["Codex CLI"]
         Tools["git, python3, jq,<br/>ripgrep, make, cmake..."]
 
-        EP -->|"1. start"| DinD
-        EP -->|"2. copy credentials<br/>(first run)"| Claude
+        EP -->|"1. 启动"| DinD
+        EP -->|"2. 复制凭证<br/>（首次运行）"| Claude
         EP -->|"2."| Gemini
         EP -->|"2."| Codex
-        EP -->|"3. decrypt API keys<br/>(if .env.gpg)"| Tools
+        EP -->|"3. 解密 API 密钥<br/>（如有 .env.gpg）"| Tools
     end
 
-    H_OAuth -->|"read-only mount"| EP
-    H_WS -->|"bind mount<br/>~/work"| Tools
-    H_Data -->|"bind mount<br/>~/.claude, ~/.gemini,<br/>~/.codex"| Claude
-    H_Data -->|"bind mount"| Gemini
-    H_Data -->|"bind mount"| Codex
+    H_OAuth -->|"只读挂载"| EP
+    H_WS -->|"挂载<br/>~/work"| Tools
+    H_Data -->|"挂载<br/>~/.claude, ~/.gemini,<br/>~/.codex"| Claude
+    H_Data -->|"挂载"| Gemini
+    H_Data -->|"挂载"| Codex
 
     style DinD fill:#f0f0f0,stroke:#666
     style Claude fill:#d4a574,stroke:#333
@@ -76,11 +76,11 @@ graph TB
 
 ```mermaid
 graph LR
-    subgraph "Dockerfile Stages"
-        sys["sys<br/>user, locale, tz"]
-        base["base<br/>dev tools, docker"]
+    subgraph "Dockerfile 阶段"
+        sys["sys<br/>用户, 语言, 时区"]
+        base["base<br/>开发工具, Docker"]
         devel["devel<br/>claude, gemini, codex"]
-        test["test<br/>bats smoke test"]
+        test["test<br/>Bats smoke test"]
     end
 
     sys --> base --> devel --> test
@@ -88,7 +88,7 @@ graph LR
     subgraph "Compose Services"
         S_CPU["devel<br/>(CPU, default)"]
         S_GPU["devel-gpu<br/>(NVIDIA GPU)"]
-        S_Test["test<br/>(ephemeral)"]
+        S_Test["test<br/>（临时性）"]
     end
 
     devel -.-> S_CPU
@@ -142,7 +142,7 @@ flowchart LR
 
 ## 对话持久化
 
-对话记录与 Session 数据通过 bind mount 持久化保存，容器重启后仍可保留。
+对话记录与 Session 数据通过 挂载 持久化保存，容器重启后仍可保留。
 
 `run.sh` 会自动从项目目录向上扫描是否存在 `agent_*` 目录。若找到，则将数据存放于该目录；否则回退使用 `./data/`。
 
@@ -306,7 +306,7 @@ git subtree pull --prefix=docker/ai_agent \
 | `WS_PATH` | 挂载至容器内 `~/work` 的主机路径 |
 | `IMAGE_NAME` | Docker 镜像名称（默认：`ai_agent`） |
 
-## 冒烟测试
+## smoke test
 
 构建 test target 验证环境：
 
@@ -388,7 +388,7 @@ git subtree pull --prefix=docker/ai_agent \
 ├── encrypt_env.sh         # API 密钥加密辅助脚本
 ├── post_setup.sh          # 依 GPU_ENABLED 推导 BASE_IMAGE
 ├── .env.example           # .env 模板
-├── smoke_test/            # Bats 冒烟测试
+├── smoke_test/            # Bats smoke test
 │   ├── agent_env.bats
 │   └── test_helper.bash
 ├── docker_template/   # 自动 .env 生成器（git subtree）
@@ -403,7 +403,7 @@ git subtree pull --prefix=docker/ai_agent \
 | `sys` | 创建用户/群组、语言环境、时区、Node.js（仅 GPU） |
 | `base` | 开发工具、Python、构建工具、Docker、jq、ripgrep |
 | `devel` | Claude Code、Gemini CLI、Codex CLI、入口点、切换至非 root 用户 |
-| `test` | Bats 冒烟测试（临时性，验证后即弃用） |
+| `test` | Bats smoke test（临时性，验证后即弃用） |
 
 ### Compose 服务
 
@@ -411,7 +411,7 @@ git subtree pull --prefix=docker/ai_agent \
 |------|------|
 | `devel` | CPU 版本（默认） |
 | `devel-gpu` | GPU 版本，含 NVIDIA 设备保留 |
-| `test` | 冒烟测试（以 profile 控制） |
+| `test` | smoke test（以 profile 控制） |
 
 ### 入口点流程
 
