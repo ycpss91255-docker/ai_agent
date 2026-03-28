@@ -104,7 +104,7 @@ graph LR
 ```mermaid
 flowchart LR
     subgraph "run.sh"
-        A["Generate .env<br/>(docker_setup_helper)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
+        A["Generate .env<br/>(docker_template)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
         B --> C{"--data-dir?"}
         C -->|yes| D["Use specified dir"]
         C -->|no| E{"agent_* found?"}
@@ -255,7 +255,7 @@ my_project/
 │   ├── run.sh
 │   ├── compose.yaml
 │   ├── Dockerfile
-│   └── docker_setup_helper/
+│   └── docker_template/
 └── ...
 ```
 
@@ -292,7 +292,7 @@ git subtree pull --prefix=docker/ai_agent \
 > **注意事项**：
 > - 本地修改会由 git 正常跟踪。
 > - 若上游修改了与你本地相同的文件，`subtree pull` 可能会产生合并冲突。
-> - **不要**修改 subtree 内的 `docker_setup_helper/` — 它由 env repo 自身的 subtree 管理。
+> - **不要**修改 subtree 内的 `docker_template/` — 它由 env repo 自身的 subtree 管理。
 
 ## 设置
 
@@ -391,7 +391,7 @@ git subtree pull --prefix=docker/ai_agent \
 ├── smoke_test/            # Bats 冒烟测试
 │   ├── agent_env.bats
 │   └── test_helper.bash
-├── docker_setup_helper/   # 自动 .env 生成器（git subtree）
+├── docker_template/   # 自动 .env 生成器（git subtree）
 ├── README.md
 └── README.zh-TW.md
 ```

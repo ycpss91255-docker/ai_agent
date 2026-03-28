@@ -104,7 +104,7 @@ graph LR
 ```mermaid
 flowchart LR
     subgraph "run.sh"
-        A["Generate .env<br/>(docker_setup_helper)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
+        A["Generate .env<br/>(docker_template)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
         B --> C{"--data-dir?"}
         C -->|yes| D["Use specified dir"]
         C -->|no| E{"agent_* found?"}
@@ -255,7 +255,7 @@ my_project/
 │   ├── run.sh
 │   ├── compose.yaml
 │   ├── Dockerfile
-│   └── docker_setup_helper/
+│   └── docker_template/
 └── ...
 ```
 
@@ -292,7 +292,7 @@ git subtree pull --prefix=docker/ai_agent \
 > **Notes**:
 > - Local modifications are tracked by git normally.
 > - `subtree pull` may produce merge conflicts if upstream changed the same files you modified locally.
-> - Do **not** modify `docker_setup_helper/` inside the subtree — it is managed by the env repo's own subtree.
+> - Do **not** modify `docker_template/` inside the subtree — it is managed by the env repo's own subtree.
 
 ## Configuration
 
@@ -391,7 +391,7 @@ Located in `smoke_test/agent_env.bats` — **29 tests** total.
 ├── smoke_test/            # Bats smoke tests
 │   ├── agent_env.bats
 │   └── test_helper.bash
-├── docker_setup_helper/   # Auto .env generator (git subtree)
+├── docker_template/   # Auto .env generator (git subtree)
 ├── README.md
 └── README.zh-TW.md
 ```
