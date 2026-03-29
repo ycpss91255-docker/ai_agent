@@ -17,7 +17,7 @@ Docker-in-Docker (DinD) AI 代理開發容器，預裝 Claude Code、Gemini CLI 
   - [API 金鑰（加密）](#api-金鑰加密)
 - [作為 Subtree 使用](#作為-subtree-使用)
 - [設定](#設定)
-- [smoke test](#smoke test)
+- [Smoke Tests](#smoke-tests)
 - [架構](#架構)
   - [Dockerfile 建置階段](#dockerfile-建置階段)
   - [Compose 服務](#compose-服務)
@@ -306,74 +306,9 @@ git subtree pull --prefix=docker/ai_agent \
 | `WS_PATH` | 掛載至容器內 `~/work` 的主機路徑 |
 | `IMAGE_NAME` | Docker 映像名稱（預設：`ai_agent`） |
 
-## smoke test
+## Smoke Tests
 
-建置 test target 驗證環境：
-
-```bash
-./build.sh test
-```
-
-位於 `smoke/agent_env.bats`，共 **29** 項。
-
-<details>
-<summary>展開查看測試細項</summary>
-
-#### AI 工具 (3)
-
-| 測試項目 | 說明 |
-|----------|------|
-| `claude` | 可用 |
-| `gemini` | 可用 |
-| `codex` | 可用 |
-
-#### 開發工具 (14)
-
-| 測試項目 | 說明 |
-|----------|------|
-| `node` | 可用 |
-| `npm` | 可用 |
-| `git` | 可用 |
-| `python3` | 可用 |
-| `make` | 可用 |
-| `cmake` | 可用 |
-| `g++` | 可用 |
-| `curl` | 可用 |
-| `wget` | 可用 |
-| `jq` | 可用 |
-| `rg` (ripgrep) | 可用 |
-| `tree` | 可用 |
-| `docker` | 可用 |
-| `gpg` | 可用 |
-
-#### 系統 (7)
-
-| 測試項目 | 說明 |
-|----------|------|
-| 用戶 | 非 root |
-| `sudo` | 免密碼執行 |
-| 時區 | `Asia/Taipei` |
-| `LANG` | `en_US.UTF-8` |
-| work 目錄 | 存在 |
-| work 目錄 | 可寫入 |
-| `entrypoint.sh` | 存在 |
-
-#### 排除工具 (4)
-
-| 測試項目 | 說明 |
-|----------|------|
-| `tmux` | 未安裝（最小化映像） |
-| `vim` | 未安裝 |
-| `fzf` | 未安裝 |
-| `terminator` | 未安裝 |
-
-#### 安全性 (1)
-
-| 測試項目 | 說明 |
-|----------|------|
-| `encrypt_env.sh` | 在 PATH 中 |
-
-</details>
+詳見 [TEST.md](../test/TEST.md)。
 
 ## 架構
 
