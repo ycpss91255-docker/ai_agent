@@ -104,7 +104,7 @@ graph LR
 ```mermaid
 flowchart LR
     subgraph "run.sh"
-        A["Generate .env<br/>(docker_template)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
+        A["Generate .env<br/>(template)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
         B --> C{"--data-dir?"}
         C -->|yes| D["Use specified dir"]
         C -->|no| E{"agent_* found?"}
@@ -255,7 +255,7 @@ my_project/
 │   ├── run.sh
 │   ├── compose.yaml
 │   ├── Dockerfile
-│   └── docker_template/
+│   └── template/
 └── ...
 ```
 
@@ -292,7 +292,7 @@ git subtree pull --prefix=docker/ai_agent \
 > **注意事項**：
 > - ローカルの変更は git によって通常通り追跡されます。
 > - 上流がローカルで変更したファイルと同じファイルを変更した場合、`subtree pull` でマージコンフリクトが発生する可能性があります。
-> - subtree 内の `docker_template/` は**変更しないでください** — env リポジトリ自体の subtree によって管理されています。
+> - subtree 内の `template/` は**変更しないでください** — env リポジトリ自体の subtree によって管理されています。
 
 ## 設定
 
@@ -314,7 +314,7 @@ test ターゲットをビルドして環境を検証：
 ./build.sh test
 ```
 
-`smoke_test/agent_env.bats` に配置、全 **29** 項目。
+`smoke/agent_env.bats` に配置、全 **29** 項目。
 
 <details>
 <summary>クリックしてテスト詳細を表示</summary>
@@ -388,10 +388,10 @@ test ターゲットをビルドして環境を検証：
 ├── encrypt_env.sh         # API キー暗号化ヘルパースクリプト
 ├── post_setup.sh          # GPU_ENABLED に基づき BASE_IMAGE を導出
 ├── .env.example           # .env テンプレート
-├── smoke_test/            # Bats smoke test
+├── smoke/            # Bats smoke test
 │   ├── agent_env.bats
 │   └── test_helper.bash
-├── docker_template/   # .env 自動生成ツール（git subtree）
+├── template/   # .env 自動生成ツール（git subtree）
 ├── README.md
 └── README.zh-TW.md
 ```

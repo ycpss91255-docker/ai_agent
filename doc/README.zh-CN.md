@@ -104,7 +104,7 @@ graph LR
 ```mermaid
 flowchart LR
     subgraph "run.sh"
-        A["Generate .env<br/>(docker_template)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
+        A["Generate .env<br/>(template)"] --> B["Derive BASE_IMAGE<br/>(post_setup.sh)"]
         B --> C{"--data-dir?"}
         C -->|yes| D["Use specified dir"]
         C -->|no| E{"agent_* found?"}
@@ -255,7 +255,7 @@ my_project/
 │   ├── run.sh
 │   ├── compose.yaml
 │   ├── Dockerfile
-│   └── docker_template/
+│   └── template/
 └── ...
 ```
 
@@ -292,7 +292,7 @@ git subtree pull --prefix=docker/ai_agent \
 > **注意事项**：
 > - 本地修改会由 git 正常跟踪。
 > - 若上游修改了与你本地相同的文件，`subtree pull` 可能会产生合并冲突。
-> - **不要**修改 subtree 内的 `docker_template/` — 它由 env repo 自身的 subtree 管理。
+> - **不要**修改 subtree 内的 `template/` — 它由 env repo 自身的 subtree 管理。
 
 ## 设置
 
@@ -314,7 +314,7 @@ git subtree pull --prefix=docker/ai_agent \
 ./build.sh test
 ```
 
-位于 `smoke_test/agent_env.bats`，共 **29** 项。
+位于 `smoke/agent_env.bats`，共 **29** 项。
 
 <details>
 <summary>展开查看测试详情</summary>
@@ -388,10 +388,10 @@ git subtree pull --prefix=docker/ai_agent \
 ├── encrypt_env.sh         # API 密钥加密辅助脚本
 ├── post_setup.sh          # 依 GPU_ENABLED 推导 BASE_IMAGE
 ├── .env.example           # .env 模板
-├── smoke_test/            # Bats smoke test
+├── smoke/            # Bats smoke test
 │   ├── agent_env.bats
 │   └── test_helper.bash
-├── docker_template/   # 自动 .env 生成器（git subtree）
+├── template/   # 自动 .env 生成器（git subtree）
 ├── README.md
 └── README.zh-TW.md
 ```
