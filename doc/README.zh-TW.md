@@ -68,10 +68,6 @@ graph TB
     H_Data -->|"掛載"| Gemini
     H_Data -->|"掛載"| Codex
 
-    style DinD fill:#f0f0f0,stroke:#666
-    style Claude fill:#d4a574,stroke:#333
-    style Gemini fill:#74a5d4,stroke:#333
-    style Codex fill:#74d4a5,stroke:#333
 ```
 
 ```mermaid
@@ -95,10 +91,6 @@ graph LR
     devel -.-> S_GPU
     test -.-> S_Test
 
-    style sys fill:#e8e8e8,stroke:#333
-    style base fill:#d0d0d0,stroke:#333
-    style devel fill:#b8d4b8,stroke:#333
-    style test fill:#d4b8b8,stroke:#333
 ```
 
 ```mermaid
