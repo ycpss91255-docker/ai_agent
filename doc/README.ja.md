@@ -17,7 +17,7 @@ Docker-in-Docker (DinD) AI エージェント開発コンテナ。Claude Code、
   - [API キー（暗号化）](#api-キー暗号化)
 - [Subtree としての利用](#subtree-としての利用)
 - [設定](#設定)
-- [smoke test](#smoke test)
+- [Smoke Tests](#smoke-tests)
 - [アーキテクチャ](#アーキテクチャ)
   - [Dockerfile ビルドステージ](#dockerfile-ビルドステージ)
   - [Compose サービス](#compose-サービス)
@@ -306,74 +306,9 @@ git subtree pull --prefix=docker/ai_agent \
 | `WS_PATH` | コンテナ内の `~/work` にマウントされるホストパス |
 | `IMAGE_NAME` | Docker イメージ名（デフォルト：`ai_agent`） |
 
-## smoke test
+## Smoke Tests
 
-test ターゲットをビルドして環境を検証：
-
-```bash
-./build.sh test
-```
-
-`smoke/agent_env.bats` に配置、全 **29** 項目。
-
-<details>
-<summary>クリックしてテスト詳細を表示</summary>
-
-#### AI ツール (3)
-
-| テスト項目 | 説明 |
-|------------|------|
-| `claude` | 利用可能 |
-| `gemini` | 利用可能 |
-| `codex` | 利用可能 |
-
-#### 開発ツール (14)
-
-| テスト項目 | 説明 |
-|------------|------|
-| `node` | 利用可能 |
-| `npm` | 利用可能 |
-| `git` | 利用可能 |
-| `python3` | 利用可能 |
-| `make` | 利用可能 |
-| `cmake` | 利用可能 |
-| `g++` | 利用可能 |
-| `curl` | 利用可能 |
-| `wget` | 利用可能 |
-| `jq` | 利用可能 |
-| `rg` (ripgrep) | 利用可能 |
-| `tree` | 利用可能 |
-| `docker` | 利用可能 |
-| `gpg` | 利用可能 |
-
-#### システム (7)
-
-| テスト項目 | 説明 |
-|------------|------|
-| ユーザー | 非 root |
-| `sudo` | パスワードなしで実行可能 |
-| タイムゾーン | `Asia/Taipei` |
-| `LANG` | `en_US.UTF-8` |
-| work ディレクトリ | 存在する |
-| work ディレクトリ | 書き込み可能 |
-| `entrypoint.sh` | 存在する |
-
-#### 除外ツール (4)
-
-| テスト項目 | 説明 |
-|------------|------|
-| `tmux` | 未インストール（最小化イメージ） |
-| `vim` | 未インストール |
-| `fzf` | 未インストール |
-| `terminator` | 未インストール |
-
-#### セキュリティ (1)
-
-| テスト項目 | 説明 |
-|------------|------|
-| `encrypt_env.sh` | PATH に存在 |
-
-</details>
+詳細は [TEST.md](../test/TEST.md) を参照。
 
 ## アーキテクチャ
 
