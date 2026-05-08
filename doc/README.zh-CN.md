@@ -2,6 +2,8 @@
 
 # AI Agent 开发环境
 
+[![CI](https://github.com/ycpss91255-docker/ai_agent/actions/workflows/main.yaml/badge.svg)](https://github.com/ycpss91255-docker/ai_agent/actions/workflows/main.yaml) [![License](https://img.shields.io/badge/License-Apache--2.0-blue?style=flat-square)](../LICENSE)
+
 Docker-in-Docker (DinD) AI 代理开发容器，预装 Claude Code、Gemini CLI 与 OpenAI Codex CLI。提供 CPU 与 NVIDIA GPU 两种版本，以非 root 用户运行，并自动对应主机的 UID/GID。
 
 ## 目录
