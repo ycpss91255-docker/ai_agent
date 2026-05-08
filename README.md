@@ -1,6 +1,8 @@
-**English** | **[繁體中文](doc/README.zh-TW.md)** | **[简体中文](doc/README.zh-CN.md)** | **[日本語](doc/README.ja.md)**
-
 # AI Agent Dev Environment
+
+[![CI](https://github.com/ycpss91255-docker/ai_agent/actions/workflows/main.yaml/badge.svg)](https://github.com/ycpss91255-docker/ai_agent/actions/workflows/main.yaml)
+
+**[English](README.md)** | **[繁體中文](doc/README.zh-TW.md)** | **[简体中文](doc/README.zh-CN.md)** | **[日本語](doc/README.ja.md)**
 
 Docker-in-Docker (DinD) development container for AI agents, with Claude Code, Gemini CLI, and OpenAI Codex CLI pre-installed. Available in CPU and NVIDIA GPU variants. Runs as non-root user with host UID/GID matching.
 
@@ -304,23 +306,32 @@ See [TEST.md](doc/test/TEST.md) for details.
 
 ## Architecture
 
-```
-.
-├── Dockerfile             # Multi-stage build (sys → base → devel → test)
-├── compose.yaml           # Services: devel (CPU), devel-gpu, test
-├── build.sh               # Build with auto .env generation
-├── run.sh                 # Run with auto .env generation
-├── exec.sh                # Exec into running container
-├── entrypoint.sh          # DinD startup, OAuth copy, API key decryption
-├── encrypt_env.sh         # Helper to encrypt API keys
-├── post_setup.sh          # Derives BASE_IMAGE from GPU_ENABLED
-├── .env.example           # Template for .env
-├── smoke/            # Bats smoke tests
-│   ├── agent_env.bats
-│   └── test_helper.bash
-├── template/   # Auto .env generator (git subtree)
-├── README.md
-└── README.zh-TW.md
+```text
+ai_agent/
+├── Dockerfile                                    # Multi-stage build (sys -> base -> devel -> test)
+├── compose.yaml                                  # Services: devel (CPU), devel-gpu, test
+├── build.sh -> template/script/docker/build.sh   # Symlink
+├── run.sh -> template/script/docker/run.sh       # Symlink
+├── exec.sh -> template/script/docker/exec.sh     # Symlink
+├── stop.sh -> template/script/docker/stop.sh     # Symlink
+├── Makefile -> template/script/docker/Makefile   # Symlink
+├── encrypt_env.sh                                # Helper to encrypt API keys
+├── post_setup.sh                                 # Derives BASE_IMAGE from GPU_ENABLED
+├── .env.example                                  # IMAGE_NAME fallback
+├── setup.conf                                    # Repo override of template/setup.conf
+├── script/
+│   └── entrypoint.sh                             # DinD startup, OAuth copy, API key decryption
+├── test/
+│   └── smoke/
+│       └── agent_env.bats                        # Bats smoke tests (repo-specific)
+├── doc/                                          # Translated READMEs
+│   ├── README.zh-TW.md
+│   ├── README.zh-CN.md
+│   └── README.ja.md
+├── template/                                     # Shared scripts, tests, CI (git subtree)
+├── .github/workflows/
+│   └── main.yaml                                 # CI/CD (calls template reusable workflows)
+└── README.md
 ```
 
 ### Dockerfile Stages
