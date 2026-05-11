@@ -249,7 +249,7 @@ my_project/
 │   ├── run.sh
 │   ├── compose.yaml
 │   ├── Dockerfile
-│   └── template/
+│   └── .base/
 └── ...
 ```
 
@@ -286,7 +286,7 @@ git subtree pull --prefix=docker/ai_agent \
 > **注意事項**：
 > - ローカルの変更は git によって通常通り追跡されます。
 > - 上流がローカルで変更したファイルと同じファイルを変更した場合、`subtree pull` でマージコンフリクトが発生する可能性があります。
-> - subtree 内の `template/` は**変更しないでください** — env リポジトリ自体の subtree によって管理されています。
+> - subtree 内の `.base/` は**変更しないでください** — env リポジトリ自体の subtree によって管理されています。
 
 ## 設定
 
@@ -320,7 +320,7 @@ git subtree pull --prefix=docker/ai_agent \
 ├── smoke/            # Bats smoke test
 │   ├── agent_env.bats
 │   └── test_helper.bash
-├── template/   # .env 自動生成ツール（git subtree）
+├── .base/   # .env 自動生成ツール（git subtree）
 ├── README.md
 └── README.zh-TW.md
 ```
